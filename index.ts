@@ -3,6 +3,7 @@ import { NotionToMarkdown } from "https://cdn.skypack.dev/notion-to-md";
 import { Application } from "oak";
 import getNotionPageId from "./util/getNotionPageId.ts";
 import { getMdStringFromId } from "./util/getMDStringFromId.ts";
+import imgParser from "./util/imgParser.ts";
 
 const notion = new Client({
   auth: Deno.env.get("NOTION_TOKEN"),
@@ -19,7 +20,8 @@ app.use(async (ctx) => {
     ctx.response.body = JSON.stringify({ error: "Invalid JSON" });
     return;
   }
-  const md = await getMdStringFromId(getNotionPageId(body.link), n2m);
+  let md = await getMdStringFromId(getNotionPageId(body.link), n2m);
+  md = await imgParser(md); 
   ctx.response.body = { link: body.link, content: md };
   ctx.response.type = "application/json"
   ctx.response.status = 200
