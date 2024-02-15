@@ -20,7 +20,9 @@ app.use(async (ctx) => {
     return;
   }
   const md = await getMdStringFromId(getNotionPageId(body.link), n2m);
-  ctx.response.body = JSON.stringify({ link: body.link, content: md });
+  ctx.response.body = { link: body.link, content: md };
+  ctx.response.type = "application/json"
+  ctx.response.status = 200
 })
 
 await app.listen({ port: 8000 });
