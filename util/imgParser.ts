@@ -12,6 +12,9 @@ export default async function imgParser(md: string, ) {
 		let url = (img.match(/\((.*)\)/) ?? [''])[0];
 		url = url.replaceAll('(', '').replaceAll(')', '');
 		if (url) {
+			if (!URL.canParse(url)) {
+				continue;
+			}
 			const buffer = await (await fetch(url)).arrayBuffer();
 			const imgName = url.split('?')[0].split('/').pop();
 			if (!imgName) {
