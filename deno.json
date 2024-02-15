@@ -4,9 +4,10 @@
     "supabase": "https://cdn.skypack.dev/@supabase/supabase-js",
     "std/": "https://deno.land/std@0.213.0/",
     "$abc": "https://deno.land/x/abc@v1.3.3/mod.ts",
+    "oak": "https://deno.land/x/oak@v13.2.5/mod.ts",
     "notion-to-md": "https://cdn.skypack.dev/notion-to-md"
   },
   "tasks": {
-    "start": "deno run --allow-net --allow-env --allow-read ./notion-integration/index.ts"
+    "start": "deno run --allow-net --allow-env --allow-read ./index.ts"
   }
 }

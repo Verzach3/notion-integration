@@ -1,5 +1,6 @@
 import { Client } from "https://cdn.skypack.dev/@notionhq/client";
 import { NotionToMarkdown } from "https://cdn.skypack.dev/notion-to-md";
+import { Application } from "oak";
 import getNotionPageId from "./util/getNotionPageId.ts";
 import { getMdStringFromId } from "./util/getMDStringFromId.ts";
 
@@ -9,23 +10,17 @@ const notion = new Client({
 const n2m = new NotionToMarkdown({
   notionClient: notion,
 });
-Deno.serve(async (req) => {
-  let parsedReq
-  try {
-    parsedReq = await req.json();
-  } catch (_error) {
-    return new Response(JSON.stringify({error: "Invalid JSON"}),  {
-      headers: { "Content-Type": "application/json" },
-    });
+
+const app = new Application();
+
+app.use(async (ctx) => {
+  const body = await ctx.request.body.json();
+  if (!body.link) {
+    ctx.response.body = JSON.stringify({ error: "Invalid JSON" });
+    return;
   }
-  if (!parsedReq.link) {
-    return new Response(JSON.stringify({error: "Invalid JSON"}),  {
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-  const { link } = parsedReq;
-  const md = await getMdStringFromId(getNotionPageId(link), n2m);
-  return new Response(JSON.stringify({link: link, content: md}),  {
-    headers: { "Content-Type": "application/json" },
-  });
-});
+  const md = await getMdStringFromId(getNotionPageId(body.link), n2m);
+  ctx.response.body = JSON.stringify({ link: body.link, content: md });
+})
+
+await app.listen({ port: 8000 });
